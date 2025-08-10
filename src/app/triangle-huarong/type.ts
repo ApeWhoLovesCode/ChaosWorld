@@ -33,3 +33,13 @@ export type TriangleHuarongRoadProps = {
   /** children节点 */
   children?: React.ReactNode
 }
+export type TriangleHuarongRoadItemProps = { 
+  /** 当前 item 的索引 */
+  index: number
+  /** 类名 */
+  className?: string;
+  /** style样式 */
+  style?: CSSProperties;
+  /** children节点 */
+  children?: React.ReactNode
+}

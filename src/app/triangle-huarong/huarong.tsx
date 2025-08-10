@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { TriangleHuarongRoadProps } from "./type";
 import { useDebounceFn, useSetState } from 'ahooks';
+import HuarongItem from "./huarongItem";
+import { ITEM_NUM } from "./config";
 
 export default function Huarong(props: TriangleHuarongRoadProps) {
   const { gap, width, onComplete, onResize, children, ...ret } = props
@@ -17,8 +19,24 @@ export default function Huarong(props: TriangleHuarongRoadProps) {
   })
 
   const renderChildren = () => {
+    const hasNum = Object.values(children?.valueOf() ?? {}).length
+    if(ITEM_NUM - hasNum <= 0) return children
+    const fillArr = []
+    for(let i = hasNum; i < ITEM_NUM; i++) {
+      fillArr.push(
+        <HuarongItem 
+          key={i} 
+          index={i} 
+        >
+          {i}
+        </HuarongItem>
+      )
+    }
     return (
-      <></>
+      <>
+        {children}
+        {fillArr}
+      </>
     )
   }
 
