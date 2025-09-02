@@ -6,6 +6,7 @@ import { useDebounceFn, useSetState } from 'ahooks';
 import { getPositionItem } from "./utils";
 import { HuarongRoadCtx } from "./context";
 import useTouchEvent from "@/hooks/useTouchEvent";
+import './index.css';
 
 export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   const { index, children, ...ret } = props
@@ -50,12 +51,13 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       width,
       height,
       top: gridSize * row + handleGap(row),
-      left: gridSize * col + handleGap(col),
+      left: (gridSize / 2) * col + handleGap(col),
     };
   }, [gridSize, index, data, gap, getPositionItem]);
 
   return (
-    <div 
+    <div
+      className={index % 2 === 0 ? 'triangle' : 'triangle-flip'}
       style={{
         ...cardStyle,
         transitionDuration: info.duration + "s",
