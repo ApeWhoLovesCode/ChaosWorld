@@ -1,13 +1,13 @@
 "use client"
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { TriangleHuarongRoadProps } from "./type";
 import { useDebounceFn, useSetState } from 'ahooks';
 import HuarongItem from "./huarongItem";
 import { ITEM_NUM } from "./config";
 
 export default function Huarong(props: TriangleHuarongRoadProps) {
-  const { gap, width, onComplete, onResize, children, ...ret } = props
+  const { gap, width, data, onComplete, onResize, children, ...ret } = props
   const huarongRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useSetState({
@@ -17,6 +17,12 @@ export default function Huarong(props: TriangleHuarongRoadProps) {
     /** 索引对应的列表 */
     data: new Array(4) as boolean[]
   })
+
+  useEffect(() => {
+    if(!data?.length) {
+      state.data = new Array(4) as boolean[]
+    }
+  }, [data])
 
   const renderChildren = () => {
     const hasNum = Object.values(children?.valueOf() ?? {}).length
@@ -47,7 +53,7 @@ export default function Huarong(props: TriangleHuarongRoadProps) {
         width,
       }}
     >
-      <div ref={huarongRef} style={{height: state.height + 'px',}}>
+      <div ref={huarongRef} className="relative" style={{height: state.height + 'px',}}>
         {renderChildren()}
       </div>
     </div>

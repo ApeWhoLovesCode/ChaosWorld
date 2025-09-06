@@ -7,6 +7,16 @@ export type TriangleHuarongRoadProps = {
    */
   width?: string | number
   /** 
+   * 行数
+   * @default 4 
+   */
+  rowNum?: number
+  /** 
+   * 列数 （仅代表第一行有多少列）
+   * @default 5
+   */
+  colNum?: number
+  /** 
    * 数据的位置
    * 例： 
    * [
