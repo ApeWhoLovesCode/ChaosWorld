@@ -1,12 +1,15 @@
 import React from "react";
 import { Direction } from "@/utils/tool";
+import { TriangleHuarongRoadCommon } from "./type";
 
 export const HuarongRoadCtx = React.createContext<HuarongRoadCtxType>({
   gap: 2,
   data: [],
   gridArr: [],
   gridSize: 50,
-  isReset: false,
+  rowNum: 0,
+  colNum: 0,
+  startLeftArr: [],
   onChangeGrid: (p: onChangeGridParams) => {}
 })
 
@@ -18,9 +21,9 @@ export type HuarongRoadCtxType = {
   gridArr: number[][]
   /** 每个格子的大小 */
   gridSize: number
-  isReset: boolean
+  startLeftArr: number[]
   onChangeGrid: (p: onChangeGridParams) => void
-}
+} & Required<TriangleHuarongRoadCommon>
 
 export type GridPosition = {row: number, col: number}
 
