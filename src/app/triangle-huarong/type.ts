@@ -48,6 +48,8 @@ export type TriangleHuarongRoadProps = {
 } & TriangleHuarongRoadCommon
 
 export type TriangleHuarongRoadItemProps = { 
+  /** 当前 item 的值，0代表是空格 */
+  value: number
   /** 当前 item 的索引 */
   index: number
   /** 所在的行数 */

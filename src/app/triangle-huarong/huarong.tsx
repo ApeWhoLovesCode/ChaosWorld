@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { TriangleHuarongRoadProps } from './type';
 import { useDebounceFn, useSetState } from 'ahooks';
 import HuarongItem from './huarongItem';
 import useMergeProps from '@/hooks/useMergeProps';
-import { HuarongRoadCtx } from './context';
+import { HuarongRoadCtx, onChangeGridParams } from './context';
+import { checkToWin } from './utils';
 
 const defaultProps: TriangleHuarongRoadProps = {
   rowNum: 4,
@@ -19,7 +20,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   const { gap, width, data, rowNum, colNum, onComplete, onResize, children, ...ret } = props;
   const huarongRef = useRef<HTMLDivElement>(null);
   const total = useRef(0)
-
+  const [gridArr, setGridArr] = useState<number[][]>([]);
   const [state, setState] = useSetState({
     height: 100,
     /** 每一个格子的大小 */
@@ -48,11 +49,19 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     });
     total.current = rowNum * colNum
     // console.log('newData: ', newData);
+    setGridArr(newData)
     setState({data: newData});
   }, [rowNum, colNum]);
 
-  const onChangeGrid = () => {
-    
+  const onChangeGrid = ({p, target, direction, index}: onChangeGridParams) => {
+    function exChangeVal(row: number, col: number, row2: number, col2: number) {
+      [gridArr[row][col], gridArr[row2][col2]] = [gridArr[row2][col2], gridArr[row][col]];
+    }
+    exChangeVal(p.row, p.col, target.row, target.col)
+    if(checkToWin(gridArr)) {
+      onComplete?.()
+    }
+    setGridArr([...gridArr])
   }
 
   const startLeftArr = useMemo(() => {
@@ -73,7 +82,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     state.data.forEach((arr, row) => {
       arr.forEach((i, col) => {
         fillArr.push(
-          <HuarongItem key={row + '-' + col} index={row * colNum + col} row={row} col={col}>
+          <HuarongItem key={row + '-' + col} index={row * colNum + col} row={row} col={col} value={i}>
             {i}
           </HuarongItem>,
         );
@@ -96,7 +105,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         colNum,
         startLeftArr,
         data,
-        gridArr: [],
+        gridArr,
         onChangeGrid,
       }}
     >

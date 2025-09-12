@@ -129,5 +129,6 @@ type checkItem = {
 
 /** 检查是否获胜 */
 export function checkToWin(arr: number[][]) {
-  return arr[3][1] === 1 && arr[3][2] === 1 && arr[4][1] === 1 && arr[4][2] === 1
+  const lastRow = arr.at(-1)
+  return lastRow?.at(-1) === 0
 }
