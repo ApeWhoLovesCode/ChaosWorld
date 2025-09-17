@@ -1,3 +1,4 @@
+import { Direction } from "@/utils/tool"
 import { CSSProperties } from "react"
 
 export type TriangleHuarongRoadCommon = {
@@ -63,3 +64,10 @@ export type TriangleHuarongRoadItemProps = {
   /** children节点 */
   children?: React.ReactNode
 }
+
+export type GridPosition = {row: number, col: number}
+export type CanMoveItem = {
+  /** 可以移动的方向 */
+  d: Direction
+} & GridPosition
+export type ZeroInfo = GridPosition & {canMoveArr: CanMoveItem[]}

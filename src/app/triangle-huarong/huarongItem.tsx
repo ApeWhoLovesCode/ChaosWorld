@@ -1,18 +1,20 @@
 'use client';
 
-import { useContext, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
 import { TriangleHuarongRoadItemProps } from './type';
-import { useDebounceFn, useSetState } from 'ahooks';
+import { useSetState } from 'ahooks';
 import { HuarongRoadCtx } from './context';
 import useTouchEvent from '@/hooks/useTouchEvent';
 import './index.css';
-import { checkDirectionXY, range } from '@/utils/compute';
-import  { checkRoadDirection } from './utils';
+import { checkDirectionVal, checkDirectionXY, DirectionType, range } from '@/utils/compute';
 import type { Direction } from '@/utils/tool';
 
 export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   const { index, children, row, col, value, ...ret } = props as Required<TriangleHuarongRoadItemProps>;
-  const { gap, gridSize, gridArr, data, rowNum, colNum, startLeftArr, onChangeGrid } = useContext(HuarongRoadCtx);
+  const { gap, gridSize, zeroInfo, gridArr, data, rowNum, colNum, startLeftArr, onChangeGrid } = useContext(HuarongRoadCtx);
+
+  /** 是否为正三角形 △ */
+  const isTriangle = (row < rowNum / 2 ? !(col % 2) : col % 2);
 
   const [info, setInfo] = useSetState({
     startX: 0,
@@ -26,10 +28,18 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   });
   const isVerticalRef = useRef<boolean>(void 0);
 
-    /** 当前可移动的方向 */
+  useEffect(() => {
+    setInfo({ rowNum: row, colNum: col });
+  }, [row, col]);
+
+  /** 当前可移动的方向 */
   const moveDirection = useMemo(
-    () => checkRoadDirection(gridArr, info.rowNum, info.colNum),
-    [gridArr, info.rowNum, info.colNum]
+    () => {
+      const canMoveItem = zeroInfo.canMoveArr.find((v) => v.row === info.rowNum && v.col === info.colNum)
+      if(!canMoveItem) return 0
+      return canMoveItem.d
+    },
+    [zeroInfo, info.rowNum, info.colNum],
   );
 
   const { info: _info, onTouchFn } = useTouchEvent({
@@ -38,31 +48,12 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       setInfo({ startX: info.x, startY: info.y, duration: 0 });
     },
     onTouchMove() {
-      const { directionX, directionY } = checkDirectionXY(
-        _info.deltaX,
-        _info.deltaY
-      );
-      if (!moveDirection) return;
-      if (
-        moveDirection[directionX as Direction] &&
-        isVerticalRef.current !== true
-      ) {
-        if (isVerticalRef.current === void 0) {
-          isVerticalRef.current = false;
-        }
-        const rangeVal =
-          (gridSize + gap) * moveDirection[directionX as Direction];
-        setInfo({ x: range(_info.deltaX, -rangeVal, rangeVal) + info.startX });
-      } else if (
-        moveDirection[directionY as Direction] &&
-        isVerticalRef.current !== false
-      ) {
-        if (isVerticalRef.current === void 0) {
-          isVerticalRef.current = true;
-        }
-        const rangeVal =
-          (gridSize + gap) * moveDirection[directionY as Direction];
-        setInfo({ y: range(_info.deltaY, -rangeVal, rangeVal) + info.startY });
+      const { directionX, directionY } = checkDirectionXY(_info.deltaX, _info.deltaY);
+      const gridW = gridSize + gap
+      if (directionX === moveDirection) {
+        setInfo({ x: range(_info.deltaX, -gridW, gridW) + info.startX });
+      } else if (directionY === moveDirection) {
+        setInfo({ y: range(_info.deltaY, -gridW, gridW) + info.startY});
       }
     },
     onTouchEnd() {
@@ -109,17 +100,18 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
           direction,
         });
       }
+      console.log('x, y: ', x, y);
       setInfo({ x, y, duration: 0.4, rowNum, colNum });
     },
-    // isDisable: {
-    //   all: !moveDirection,
-    // },
+    isDisable: {
+      all: !moveDirection,
+    },
     isStopPropagation: true,
   });
 
   const cardStyle = useMemo(() => {
     const handleGap = (v: number) => (0 < v ? v * gap : 0);
-    const startLeft = startLeftArr[row] || 0
+    const startLeft = startLeftArr[row] || 0;
     return {
       width: gridSize,
       height: gridSize,
@@ -130,7 +122,7 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
 
   return (
     <div
-      className={`absolute flex items-center justify-center transition-all bg-gray-200 select-none dark:bg-gray-600 ${(row < rowNum / 2 ? !(col % 2) : col % 2) ? 'triangle' : 'triangle-flip'}`}
+      className={`absolute`}
       style={{
         ...cardStyle,
         transitionDuration: info.duration + 's',
@@ -138,7 +130,15 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       }}
       {...onTouchFn}
     >
-      {value ? children : null}
+      {value ? (
+        <div
+          className={`flex size-full items-center justify-center bg-gray-200 transition-all select-none dark:bg-gray-600 ${isTriangle ? 'triangle' : 'triangle-flip'}`}
+        >
+          {value ? children : null}
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }

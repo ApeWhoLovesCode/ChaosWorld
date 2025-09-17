@@ -1,134 +1,52 @@
-import { Direction } from "@/utils/tool"
+import { shuffleArray } from "@/utils/tool";
 
-export const getPositionItem = (
-  {gridSize, index, data, gap}: {
-    gridSize: number
-    index: number
-    data: number[][] 
-    gap: number
-  }
-) => {
-  const obj = {
-    row: 0,
-    col: 0,
-    width: gridSize,
-    height: gridSize,
-  }
-  data.some((item, rowIndex) => {
-    const colIndex = item.indexOf(handleIndex(index))
-    if(colIndex !== -1) {
-      obj.row = rowIndex
-      obj.col = colIndex
-      if(index === 0) {
-        obj.width = 2 * gridSize + gap
-        obj.height = 2 * gridSize + gap
-      } else if(index <= 5) {
-        if(item[colIndex + 1] === item[colIndex]) { // 该五虎将是横着的
-          obj.width = 2 * gridSize + gap
-        } else { // 该五虎将是竖着的
-          obj.height = 2 * gridSize + gap
-        }
+/** 根据反转次数和空瓦片的位置来检查打乱的数组是否可解 */
+function isSolvable(arr: any[], size: number) {
+  let inversions = 0;
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      if (arr[i] !== size * size && arr[j] !== size * size && arr[i] > arr[j]) {
+        inversions++;
       }
-      return true
     }
-    return false
-  })
-  return obj
+  }
+  if (size % 2 === 1) {
+    return inversions % 2 === 0;
+  } else {
+    const emptyTileRow = Math.ceil(arr.indexOf(size * size) / size);
+    return (inversions + emptyTileRow) % 2 === 1;
+  }
 }
 
-export const handleIndex = (index: number): number => {
-  if(index === 0) {
-    return 1
-  } else if(index <= 5) {
-    return 20 + index as number
-  } else {
-    return 25 + index as number
+/** 创建一个打乱的不重复数字的数组 */
+export function randomNumberArray(size: number) {
+  const arr = Array.from({length: size * size}, (_, i) => i + 1); 
+  do {
+    shuffleArray(arr);
+  } while (!isSolvable(arr, size));
+  return arr
+}
+
+/** 判断是否完成拼图 */
+export function isPuzzleSolved(arr: number[][]) {
+  const length = arr.length
+  for (let i1 = 0; i1 < length; i1++) {
+    const len = length - (i1 === length - 1 ? 1 : 0 )
+    for (let i2 = 0; i2 < len; i2++) {
+      if (arr[i1][i2] !== i1 * length + i2 + 1) {
+        return false;
+      }
+    }
   }
+  return arr.at(-1)?.at(-1) === 0
 }
 
 /** 获取行列的位置 */
-export function getRowColItem(gridArr: number[][], index: number) {
-  const obj = {
-    row: 0,
-    col: 0,
-  }
-  gridArr.some((item, rowIndex) => {
-    const colIndex = item.indexOf(handleIndex(index))
-    if(colIndex !== -1) {
-      obj.row = rowIndex
-      obj.col = colIndex
-      return true
-    }
-    return false
-  })
-  return obj
-}
-
-type CheckDirectionRes = {[key in Direction]: number} | 0
-
-/** 检查华容道item可以移动的方向 */
-export function checkRoadDirection(arr: number[][], row: number, col: number): CheckDirectionRes {
-  if(!arr?.length) return 0
-  const value = arr[row][col]
-  if(value > 30) { // 小兵
-    return handleHeroDirectionVal({arr, row, col, status: 4})
-  } else { 
-    let status: HeroesStatus = 1
-    if(value > 20) { // 五虎将
-      status = arr[row][col + 1] === value ? 2 : 3
-    }
-    return handleHeroDirectionVal({arr, row, col, status})
+export function getRowColItem(index: number, spaceIndex: number, size: number) {
+  index += index >= spaceIndex ? 1 : 0 
+  return {
+    rowNum: Math.floor(index / size),
+    colNum: index % size,
   }
 }
 
-type HeroesStatus = 1 | 2 | 3 | 4
-/**
- * @param status 1: boss 2: 横着的英雄 3: 竖着的英雄 4: 卒
- */
-function handleHeroDirectionVal({arr, row, col, status}: {
-  arr: number[][], row: number, col: number, status: HeroesStatus
-}): CheckDirectionRes {
-  const colNext = status === 2 || status === 1
-  const rowNext = status === 3 || status === 1
-  // 上右下左四个位置组成的数组。
-  const checkArr: checkItem[] = [
-    {addRow: -1, addCol: 0, colNext},
-    {addRow: 0, addCol: 1, rowNext},
-    {addRow: 1, addCol: 0, colNext},
-    {addRow: 0, addCol: -1, rowNext},
-  ]
-  const res: CheckDirectionRes = {1: 0, 2: 0, 3: 0, 4: 0}
-  // 检查下一个格子是否为空
-  const checkNextGrid = ({addRow, addCol, rowNext, colNext}: checkItem, i: number) => {
-    const isColNext = colNext ? arr[row + addRow]?.[col + addCol + 1] === 0 : true
-    const isRowNext = rowNext ? arr[row + addRow + 1]?.[col + addCol] === 0 : true
-    if(arr[row + addRow]?.[col + addCol] === 0 && isColNext && isRowNext) {
-      res[(i + 1) as Direction]++
-      checkNextGrid({
-        addRow: addRow += checkArr[i].addRow, 
-        addCol: addCol += checkArr[i].addCol, 
-        rowNext, 
-        colNext
-      }, i)
-    }
-  }
-  for(let i = 0; i < checkArr.length; i++) {
-    let {addRow, addCol, ...p} = checkArr[i]
-    if(i === 1 && colNext) addCol++;
-    if(i === 2 && rowNext) addRow++;
-    checkNextGrid({addRow, addCol, ...p}, i)
-  }
-  return Object.values(res).some(v => v) ? res : 0
-}
-type checkItem = {
-  addRow: number
-  addCol: number 
-  rowNext?: boolean
-  colNext?: boolean
-}
-
-/** 检查是否获胜 */
-export function checkToWin(arr: number[][]) {
-  const lastRow = arr.at(-1)
-  return lastRow?.at(-1) === 0
-}
