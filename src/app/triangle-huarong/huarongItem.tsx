@@ -118,11 +118,11 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       top: gridSize * row + handleGap(row),
       left: startLeft + (gridSize / 2) * col + handleGap(col),
     };
-  }, [gridSize, data, gap]);
+  }, [gridSize, gap]);
 
   return (
     <div
-      className={`absolute`}
+      className={`absolute select-none`}
       style={{
         ...cardStyle,
         transitionDuration: info.duration + 's',

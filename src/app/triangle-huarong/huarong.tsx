@@ -74,7 +74,8 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     setMoveItem(rowI, colI - 1, 2);
     const newRowI = isTriangle ? rowI + 1 : rowI - 1;
     if(data[newRowI]) {
-      const colChangeV = data[newRowI].length - data[rowI].length;
+      // const colChangeV = (data[newRowI].length - data[rowI].length - 1) * (isTriangle ? -1 : 1);
+      const colChangeV = isTriangle ? 1 : -1;
       setMoveItem(newRowI, colI + colChangeV, isTriangle ? 1 : 3);
     }
     console.log('canMoveArr: ', canMoveArr);
@@ -82,7 +83,8 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   };
 
   const initData = () => {
-    const randomC = Math.floor(Math.random() * rowNum * colNum);
+    // const randomC = Math.floor(Math.random() * rowNum * colNum);
+    const randomC = 7
     let i = 0;
     const mid = rowNum / 2;
     let addCount = 0;
@@ -90,12 +92,12 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     const newData = Array.from({ length: rowNum }).map((_, rowI) => {
       const arr: number[] = [];
       for (let colI = 0; colI < colNum + addCount; colI++) {
-        arr.push(i !== randomC ? 1 : 0);
+        i++;
+        arr.push(i !== randomC ? i : 0);
         if (i === randomC) {
           zeroRow = rowI;
           zeroCol = colI;
         }
-        i++;
       }
       if (rowI < mid - 1) {
         addCount += 2;
@@ -105,7 +107,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       return arr;
     });
     total.current = rowNum * colNum;
-    // console.log('newData: ', newData);
+    console.log('newData: ', newData);
     setGridArr(newData);
     setState({ data: newData });
     setState({ zeroInfo: { row: zeroRow, col: zeroCol, canMoveArr: reSetCanMoveArr(zeroRow, zeroCol, newData) } });
@@ -116,13 +118,16 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   }, [rowNum, colNum]);
 
   const onChangeGrid = ({ p, target, direction, index }: onChangeGridParams) => {
+    console.log('p, target: ', p, target);
     function exChangeVal(row: number, col: number, row2: number, col2: number) {
       [gridArr[row][col], gridArr[row2][col2]] = [gridArr[row2][col2], gridArr[row][col]];
     }
-    exChangeVal(p.row, p.col, target.row, target.col);
+    // exChangeVal(p.row, p.col, target.row, target.col);
+    exChangeVal(p.col, p.row, target.col, target.row);
     if (isPuzzleSolved(gridArr)) {
       onComplete?.();
     }
+    console.log('gridArr: ', gridArr);
     setGridArr([...gridArr]);
     setState({zeroInfo: {row: target.row, col: target.col, canMoveArr: reSetCanMoveArr(target.row, target.col)}});
   };
@@ -130,28 +135,24 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   const startLeftArr = useMemo(() => {
     const arr: number[] = [];
     for (let i = 0; i < rowNum / 2; i++) {
-      arr.unshift((state.gridSize / 2) * i);
+      arr.unshift((state.gridSize / 2) * i + gap * i);
     }
     for (let i = 0; i < rowNum / 2; i++) {
-      arr.push((state.gridSize / 2) * i);
+      arr.push((state.gridSize / 2) * i + gap * i);
     }
     return arr;
-  }, [rowNum]);
+  }, [rowNum, state.gridSize]);
 
   const renderChildren = () => {
     const hasNum = Object.values(children?.valueOf() ?? {}).length;
     if (total.current - hasNum <= 0) return children;
     const fillArr: any[] = [];
-    let curI = 0;
     state.data.forEach((arr, row) => {
       arr.forEach((v, col) => {
         const index = row * colNum + col;
-        if (v) {
-          curI++;
-        }
         fillArr.push(
           <HuarongItem key={row + '-' + col} index={index} row={row} col={col} value={v}>
-            {curI}
+            {v}
           </HuarongItem>,
         );
       });
