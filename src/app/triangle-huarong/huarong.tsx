@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CanMoveItem, TriangleHuarongRoadProps } from './type';
+import { CanMoveItem, TriangleDataItem, TriangleHuarongRoadProps } from './type';
 import { useDebounceFn, useSetState } from 'ahooks';
 import HuarongItem from './huarongItem';
 import useMergeProps from '@/hooks/useMergeProps';
@@ -20,7 +20,7 @@ type RequireType = keyof typeof defaultProps;
 
 export default function Huarong(comProps: TriangleHuarongRoadProps) {
   const props = useMergeProps<TriangleHuarongRoadProps, RequireType>(comProps, defaultProps);
-  const { gap, width, data, rowNum, colNum, onComplete, onResize, children, ...ret } = props;
+  const { gap, width, data, rowNum, colNum, isNotBg, onComplete, onResize, children, ...ret } = props;
   const huarongAreaRef = useRef<HTMLDivElement>(null);
   const huarongRef = useRef<HTMLDivElement>(null);
   const total = useRef(0);
@@ -67,16 +67,19 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     /** 是否为正三角形 △ */
     const isTriangle = rowI < rowNum / 2 ? !(colI % 2) : colI % 2;
     const setMoveItem = (r: number, c: number, d: Direction) => {
-      if(!data[r]?.[c]) return;
+      if (!data[r]?.[c]) return;
       canMoveArr.push({ row: r, col: c, d });
     };
     setMoveItem(rowI, colI + 1, 4);
     setMoveItem(rowI, colI - 1, 2);
     const newRowI = isTriangle ? rowI + 1 : rowI - 1;
-    if(data[newRowI]) {
+    if (data[newRowI]) {
       // const colChangeV = (data[newRowI].length - data[rowI].length - 1) * (isTriangle ? -1 : 1);
-      const colChangeV = isTriangle ? 1 : -1;
-      setMoveItem(newRowI, colI + colChangeV, isTriangle ? 1 : 3);
+      let colAddV = isTriangle ? 1 : -1;
+      if(data[rowI].length === data[newRowI]?.length) {
+        colAddV = 0;
+      }
+      setMoveItem(newRowI, colI + colAddV, isTriangle ? 1 : 3);
     }
     console.log('canMoveArr: ', canMoveArr);
     return canMoveArr;
@@ -84,11 +87,12 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
 
   const initData = () => {
     // const randomC = Math.floor(Math.random() * rowNum * colNum);
-    const randomC = 7
+    const randomC = 8;
     let i = 0;
     const mid = rowNum / 2;
     let addCount = 0;
-    let zeroRow = 0, zeroCol = 0;
+    let zeroRow = 0,
+      zeroCol = 0;
     const newData = Array.from({ length: rowNum }).map((_, rowI) => {
       const arr: number[] = [];
       for (let colI = 0; colI < colNum + addCount; colI++) {
@@ -122,14 +126,20 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     function exChangeVal(row: number, col: number, row2: number, col2: number) {
       [gridArr[row][col], gridArr[row2][col2]] = [gridArr[row2][col2], gridArr[row][col]];
     }
-    // exChangeVal(p.row, p.col, target.row, target.col);
-    exChangeVal(p.col, p.row, target.col, target.row);
+    exChangeVal(p.row, p.col, target.row, target.col);
+    // exChangeVal(p.col, p.row, target.col, target.row);
     if (isPuzzleSolved(gridArr)) {
       onComplete?.();
     }
     console.log('gridArr: ', gridArr);
     setGridArr([...gridArr]);
-    setState({zeroInfo: {row: target.row, col: target.col, canMoveArr: reSetCanMoveArr(target.row, target.col)}});
+    setState({
+      zeroInfo: {
+        row: target.row,
+        col: target.col,
+        canMoveArr: reSetCanMoveArr(target.row, target.col),
+      },
+    });
   };
 
   const startLeftArr = useMemo(() => {
@@ -141,7 +151,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       arr.push((state.gridSize / 2) * i + gap * i);
     }
     return arr;
-  }, [rowNum, state.gridSize]);
+  }, [rowNum, gap, state.gridSize]);
 
   const renderChildren = () => {
     const hasNum = Object.values(children?.valueOf() ?? {}).length;
@@ -173,6 +183,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         zeroInfo: state.zeroInfo,
         rowNum,
         colNum,
+        isNotBg,
         startLeftArr,
         data,
         gridArr,

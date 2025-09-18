@@ -1,6 +1,6 @@
 import React from "react";
 import { Direction } from "@/utils/tool";
-import { GridPosition, TriangleHuarongRoadCommon, ZeroInfo } from "./type";
+import { GridPosition, TriangleDataItem, TriangleHuarongRoadCommon, ZeroInfo } from "./type";
 
 export const HuarongRoadCtx = React.createContext<HuarongRoadCtxType>({
   gap: 2,
@@ -11,6 +11,7 @@ export const HuarongRoadCtx = React.createContext<HuarongRoadCtxType>({
   rowNum: 0,
   colNum: 0,
   startLeftArr: [],
+  isNotBg: false,
   onChangeGrid: (p: onChangeGridParams) => {}
 })
 

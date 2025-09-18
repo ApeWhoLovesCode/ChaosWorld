@@ -12,6 +12,8 @@ export type TriangleHuarongRoadCommon = {
    * @default 5
    */
   colNum?: number
+  /** 子三角是否不需要背景色 */
+  isNotBg?: boolean
 }
 
 export type TriangleHuarongRoadProps = { 
@@ -63,6 +65,14 @@ export type TriangleHuarongRoadItemProps = {
   style?: CSSProperties;
   /** children节点 */
   children?: React.ReactNode
+}
+
+export type TriangleDataItem = {
+  value: number
+  top: number
+  left: number
+  /** 是否是倒三角 */
+  isInverted: boolean
 }
 
 export type GridPosition = {row: number, col: number}
