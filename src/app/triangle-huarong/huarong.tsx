@@ -13,7 +13,7 @@ import { Direction } from '@/utils/tool';
 const defaultProps: TriangleHuarongRoadProps = {
   rowNum: 4,
   colNum: 5,
-  gap: 2,
+  gap: 20,
   width: '100%',
 };
 type RequireType = keyof typeof defaultProps;
@@ -29,6 +29,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     height: 100,
     /** 每一个格子的大小 */
     gridSize: 40,
+    gap: gap,
     /** 索引对应的列表 */
     data: [] as number[][],
     zeroInfo: {
@@ -37,6 +38,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       canMoveArr: [] as CanMoveItem[],
     },
   });
+  const [touchIndex, setTouchIndex] = useState<number | undefined>(void 0);
 
   const { run: getCardInfo } = useDebounceFn(
     () => {
@@ -44,7 +46,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       const width = cardWrap?.clientWidth ?? 0;
       const gridSize = (width - gap * (colNum - 1)) / colNum;
       const height = gridSize * rowNum + gap * (rowNum - 1);
-      setState({ height, gridSize });
+      setState({ gap: gridSize / 2, height, gridSize });
       if (state.gridSize !== gridSize) {
         onResize?.(gridSize);
       }
@@ -87,7 +89,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
 
   const initData = () => {
     // const randomC = Math.floor(Math.random() * rowNum * colNum);
-    const randomC = 8;
+    const randomC = 11;
     let i = 0;
     const mid = rowNum / 2;
     let addCount = 0;
@@ -112,8 +114,8 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     });
     total.current = rowNum * colNum;
     console.log('newData: ', newData);
-    setGridArr(newData);
-    setState({ data: newData });
+    setGridArr(structuredClone(newData));
+    setState({ data: structuredClone(newData) });
     setState({ zeroInfo: { row: zeroRow, col: zeroCol, canMoveArr: reSetCanMoveArr(zeroRow, zeroCol, newData) } });
   };
 
@@ -135,23 +137,31 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     setGridArr([...gridArr]);
     setState({
       zeroInfo: {
-        row: target.row,
-        col: target.col,
-        canMoveArr: reSetCanMoveArr(target.row, target.col),
+        row: p.row,
+        col: p.col,
+        canMoveArr: reSetCanMoveArr(p.row, p.col, gridArr),
       },
     });
   };
 
+  const onAreaTouchStart = (e: any) => {
+    // setTouchIndex(8)
+  }
+
+  const onAreaTouchOut = () => {
+    // setTouchIndex(void 0)
+  }
+
   const startLeftArr = useMemo(() => {
     const arr: number[] = [];
     for (let i = 0; i < rowNum / 2; i++) {
-      arr.unshift((state.gridSize / 2) * i + gap * i);
+      arr.unshift((state.gridSize / 2) * i + state.gap * i);
     }
     for (let i = 0; i < rowNum / 2; i++) {
-      arr.push((state.gridSize / 2) * i + gap * i);
+      arr.push((state.gridSize / 2) * i + state.gap * i);
     }
     return arr;
-  }, [rowNum, gap, state.gridSize]);
+  }, [rowNum, state.gap, state.gridSize]);
 
   const renderChildren = () => {
     const hasNum = Object.values(children?.valueOf() ?? {}).length;
@@ -178,7 +188,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   return (
     <HuarongRoadCtx.Provider
       value={{
-        gap,
+        gap: state.gap,
         gridSize: state.gridSize,
         zeroInfo: state.zeroInfo,
         rowNum,
@@ -187,15 +197,19 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         startLeftArr,
         data,
         gridArr,
+        touchIndex,
         onChangeGrid,
       }}
     >
       <div
         ref={huarongAreaRef}
         style={{
-          padding: gap + 'px',
+          // padding: gap + 'px',
           width,
         }}
+        onTouchStart={onAreaTouchStart}
+        onMouseDown={onAreaTouchStart}
+        onMouseUp={onAreaTouchOut}
       >
         <div ref={huarongRef} className="relative w-full" style={{ height: state.height + 'px' }}>
           {renderChildren()}

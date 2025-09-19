@@ -11,10 +11,7 @@ import type { Direction } from '@/utils/tool';
 
 export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   const { index, children, row, col, value, ...ret } = props as Required<TriangleHuarongRoadItemProps>;
-  const { gap, gridSize, zeroInfo, gridArr, data, isNotBg, rowNum, colNum, startLeftArr, onChangeGrid } = useContext(HuarongRoadCtx);
-
-  /** 是否为正三角形 △ */
-  const isTriangle = (row < rowNum / 2 ? !(col % 2) : col % 2);
+  const { gap, gridSize, zeroInfo, gridArr, data, touchIndex, isNotBg, rowNum, colNum, startLeftArr, onChangeGrid } = useContext(HuarongRoadCtx);
 
   const [info, setInfo] = useSetState({
     startX: 0,
@@ -27,6 +24,11 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
     colNum: 0,
   });
   const isVerticalRef = useRef<boolean>(void 0);
+  /** 当前触摸激活中 */
+  const isTouchIng = touchIndex === index;
+
+  /** 是否为正三角形 △ */
+  const isTriangle = (info.rowNum < rowNum / 2 ? !(info.colNum % 2) : info.colNum % 2);
 
   useEffect(() => {
     setInfo({ rowNum: row, colNum: col });
@@ -66,13 +68,14 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       // 检测当前方向上的移动
       if (!diff) return;
       let { startX: x, startY: y, rowNum, colNum } = info;
-      const size = gridSize + gap;
+      const size = gridSize / 2 + gap;
+      console.log('size: ', size);
       // 发生改变
       if (Math.abs(diff) >= size / 2) {
         const xy = diff > 0 ? 1 : -1
         let direction: Direction = 1
         if (isVertical) {
-          y += size * xy;
+          y += (size + gap) * xy;
           direction = diff > 0 ? 3 : 1;
         } else {
           x += size * xy;
@@ -91,7 +94,6 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
           direction,
         });
       }
-      console.log('x, y: ', x, y);
       setInfo({ x, y, duration: 0.4, rowNum, colNum });
     },
     isDisable: {
@@ -118,6 +120,8 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
         ...cardStyle,
         transitionDuration: info.duration + 's',
         transform: `translate(${info.x}px, ${info.y}px)`,
+        background: isTouchIng ? 'skyblue' : '',
+        zIndex: isTouchIng ? 10 : 'auto',
       }}
       {...onTouchFn}
     >
