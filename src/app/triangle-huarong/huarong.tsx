@@ -64,7 +64,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
 
   /** 设置空格及其附近格子的属性 */
   const reSetCanMoveArr = (rowI: number, colI: number, data = state.data) => {
-    console.log('reSetCanMoveArr: ', rowI, colI);
     const canMoveArr: CanMoveItem[] = [];
     /** 是否为正三角形 △ */
     const isTriangle = rowI < rowNum / 2 ? !(colI % 2) : colI % 2;
@@ -76,10 +75,9 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     setMoveItem(rowI, colI - 1, 2);
     const newRowI = isTriangle ? rowI + 1 : rowI - 1;
     if (data[newRowI]) {
-      // const colChangeV = (data[newRowI].length - data[rowI].length - 1) * (isTriangle ? -1 : 1);
-      let colAddV = isTriangle ? 1 : -1;
-      if(data[rowI].length === data[newRowI]?.length) {
-        colAddV = 0;
+      let colAddV = data[newRowI].length - data[rowI].length
+      if(colAddV !== 0) {
+        colAddV += colAddV > 0 ? -1 : 1
       }
       setMoveItem(newRowI, colI + colAddV, isTriangle ? 1 : 3);
     }
@@ -89,7 +87,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
 
   const initData = () => {
     // const randomC = Math.floor(Math.random() * rowNum * colNum);
-    const randomC = 11;
+    const randomC = 24;
     let i = 0;
     const mid = rowNum / 2;
     let addCount = 0;
@@ -124,7 +122,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   }, [rowNum, colNum]);
 
   const onChangeGrid = ({ p, target, direction, index }: onChangeGridParams) => {
-    console.log('p, target: ', p, target);
     function exChangeVal(row: number, col: number, row2: number, col2: number) {
       [gridArr[row][col], gridArr[row2][col2]] = [gridArr[row2][col2], gridArr[row][col]];
     }
@@ -191,11 +188,11 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         gap: state.gap,
         gridSize: state.gridSize,
         zeroInfo: state.zeroInfo,
+        data: state.data,
         rowNum,
         colNum,
         isNotBg,
         startLeftArr,
-        data,
         gridArr,
         touchIndex,
         onChangeGrid,

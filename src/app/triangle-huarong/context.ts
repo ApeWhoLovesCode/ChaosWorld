@@ -32,7 +32,9 @@ export type HuarongRoadCtxType = {
 } & Required<TriangleHuarongRoadCommon>
 
 export type onChangeGridParams = {
+  /** 移动节点之前的位置 */
   p: GridPosition
+  /** 移动节点到达的目标位置 */
   target: GridPosition
   /** 1:上 2:右 3:下 4:左 */
   direction: Direction

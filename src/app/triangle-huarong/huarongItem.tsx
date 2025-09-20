@@ -51,7 +51,7 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
     },
     onTouchMove() {
       const { directionX, directionY } = checkDirectionXY(_info.deltaX, _info.deltaY);
-      const gridW = gridSize + gap
+      const gridW = gridSize / 2 + gap
       if (directionX === moveDirection) {
         setInfo({ x: range(_info.deltaX, -gridW, gridW) + info.startX });
       } else if (directionY === moveDirection) {
@@ -69,7 +69,6 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       if (!diff) return;
       let { startX: x, startY: y, rowNum, colNum } = info;
       const size = gridSize / 2 + gap;
-      console.log('size: ', size);
       // 发生改变
       if (Math.abs(diff) >= size / 2) {
         const xy = diff > 0 ? 1 : -1
@@ -86,6 +85,11 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
           case 2: colNum++; break;
           case 3: rowNum++; break;
           case 4: colNum--; break;
+        }
+        // 上下行不相同会有错位，所以要加多一个偏移格
+        const colAddV = data[info.rowNum].length - data[rowNum].length;
+        if(colAddV !== 0) {
+          colNum += colAddV > 0 ? -1 : 1
         }
         onChangeGrid({
           p: { row: info.rowNum, col: info.colNum },
@@ -113,15 +117,25 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
     };
   }, [startLeftArr, gridSize, gap]);
 
+  if(!value) {
+    return (
+      <div
+        className={`absolute select-none`}
+        style={{
+          ...cardStyle,
+          zIndex: -1,
+        }}
+      ></div>
+    )
+  }
+
   return (
     <div
-      className={`absolute select-none transition-all`}
+      className={`absolute select-none transition-all ${moveDirection ? 'text-blue-400' : ''}`}
       style={{
         ...cardStyle,
         transitionDuration: info.duration + 's',
         transform: `translate(${info.x}px, ${info.y}px)`,
-        background: isTouchIng ? 'skyblue' : '',
-        zIndex: isTouchIng ? 10 : 'auto',
       }}
       {...onTouchFn}
     >
