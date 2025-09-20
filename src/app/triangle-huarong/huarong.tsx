@@ -75,9 +75,9 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     setMoveItem(rowI, colI - 1, 2);
     const newRowI = isTriangle ? rowI + 1 : rowI - 1;
     if (data[newRowI]) {
-      let colAddV = data[newRowI].length - data[rowI].length
-      if(colAddV !== 0) {
-        colAddV += colAddV > 0 ? -1 : 1
+      let colAddV = data[newRowI].length - data[rowI].length;
+      if (colAddV !== 0) {
+        colAddV += colAddV > 0 ? -1 : 1;
       }
       setMoveItem(newRowI, colI + colAddV, isTriangle ? 1 : 3);
     }
@@ -143,11 +143,11 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
 
   const onAreaTouchStart = (e: any) => {
     // setTouchIndex(8)
-  }
+  };
 
   const onAreaTouchOut = () => {
     // setTouchIndex(void 0)
-  }
+  };
 
   const startLeftArr = useMemo(() => {
     const arr: number[] = [];

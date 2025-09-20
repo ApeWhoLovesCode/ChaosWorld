@@ -11,7 +11,8 @@ import type { Direction } from '@/utils/tool';
 
 export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   const { index, children, row, col, value, ...ret } = props as Required<TriangleHuarongRoadItemProps>;
-  const { gap, gridSize, zeroInfo, gridArr, data, touchIndex, isNotBg, rowNum, colNum, startLeftArr, onChangeGrid } = useContext(HuarongRoadCtx);
+  const { gap, gridSize, zeroInfo, gridArr, data, touchIndex, isNotBg, rowNum, colNum, startLeftArr, onChangeGrid } =
+    useContext(HuarongRoadCtx);
 
   const [info, setInfo] = useSetState({
     startX: 0,
@@ -28,34 +29,32 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   const isTouchIng = touchIndex === index;
 
   /** 是否为正三角形 △ */
-  const isTriangle = (info.rowNum < rowNum / 2 ? !(info.colNum % 2) : info.colNum % 2);
+  const isTriangle = info.rowNum < rowNum / 2 ? !(info.colNum % 2) : info.colNum % 2;
 
   useEffect(() => {
     setInfo({ rowNum: row, colNum: col });
   }, [row, col]);
 
   /** 当前可移动的方向 */
-  const moveDirection = useMemo(
-    () => {
-      const canMoveItem = zeroInfo.canMoveArr.find((v) => v.row === info.rowNum && v.col === info.colNum)
-      if(!canMoveItem) return 0
-      return canMoveItem.d
-    },
-    [zeroInfo, info.rowNum, info.colNum],
-  );
+  const moveDirection = useMemo(() => {
+    const canMoveItem = zeroInfo.canMoveArr.find((v) => v.row === info.rowNum && v.col === info.colNum);
+    if (!canMoveItem) return 0;
+    return canMoveItem.d;
+  }, [zeroInfo, info.rowNum, info.colNum]);
 
   const { info: _info, onTouchFn } = useTouchEvent({
     onTouchStart() {
+      console.log('onTouchStart: ');
       isVerticalRef.current = void 0;
       setInfo({ startX: info.x, startY: info.y, duration: 0 });
     },
     onTouchMove() {
       const { directionX, directionY } = checkDirectionXY(_info.deltaX, _info.deltaY);
-      const gridW = gridSize / 2 + gap
+      const gridW = gridSize / 2 + gap;
       if (directionX === moveDirection) {
         setInfo({ x: range(_info.deltaX, -gridW, gridW) + info.startX });
       } else if (directionY === moveDirection) {
-        setInfo({ y: range(_info.deltaY, -gridW, gridW) + info.startY});
+        setInfo({ y: range(_info.deltaY, -gridW, gridW) + info.startY });
       }
     },
     onTouchEnd() {
@@ -71,8 +70,8 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       const size = gridSize / 2 + gap;
       // 发生改变
       if (Math.abs(diff) >= size / 2) {
-        const xy = diff > 0 ? 1 : -1
-        let direction: Direction = 1
+        const xy = diff > 0 ? 1 : -1;
+        let direction: Direction = 1;
         if (isVertical) {
           y += (size + gap) * xy;
           direction = diff > 0 ? 3 : 1;
@@ -81,15 +80,23 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
           direction = diff > 0 ? 2 : 4;
         }
         switch (direction) {
-          case 1: rowNum--; break;
-          case 2: colNum++; break;
-          case 3: rowNum++; break;
-          case 4: colNum--; break;
+          case 1:
+            rowNum--;
+            break;
+          case 2:
+            colNum++;
+            break;
+          case 3:
+            rowNum++;
+            break;
+          case 4:
+            colNum--;
+            break;
         }
         // 上下行不相同会有错位，所以要加多一个偏移格
         const colAddV = data[info.rowNum].length - data[rowNum].length;
-        if(colAddV !== 0) {
-          colNum += colAddV > 0 ? -1 : 1
+        if (colAddV !== 0) {
+          colNum += colAddV > 0 ? -1 : 1;
         }
         onChangeGrid({
           p: { row: info.rowNum, col: info.colNum },
@@ -117,7 +124,7 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
     };
   }, [startLeftArr, gridSize, gap]);
 
-  if(!value) {
+  if (!value) {
     return (
       <div
         className={`absolute select-none`}
@@ -126,12 +133,13 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
           zIndex: -1,
         }}
       ></div>
-    )
+    );
   }
 
   return (
+    // triangle
     <div
-      className={`absolute select-none transition-all ${moveDirection ? 'text-blue-400' : ''}`}
+      className={`absolute transition-all select-none ${moveDirection ? 'text-blue-400' : ''}`}
       style={{
         ...cardStyle,
         transitionDuration: info.duration + 's',
@@ -139,15 +147,11 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       }}
       {...onTouchFn}
     >
-      {value ? (
-        <div
-          className={`flex size-full items-center justify-center transition-all ${!isNotBg ? 'bg-gray-200 dark:bg-gray-600' : ''} triangle ${isTriangle ? 'rotate-0' : 'rotate-180'}`}
-        >
-          {value ? children : null}
-        </div>
-      ) : (
-        <div></div>
-      )}
+      <div
+        className={`triangle flex size-full items-center justify-center transition-all ${isTriangle ? 'rotate-0' : 'rotate-180'} ${!isNotBg ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
