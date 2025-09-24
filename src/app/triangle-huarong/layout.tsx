@@ -5,7 +5,7 @@ export default function Layout({
 }>) {
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="border-2 border-solid border-zinc-600 p-4 dark:border-zinc-400 h-[90%] aspect-square rounded-lg">
+      <div className="border-2 border-solid border-zinc-600 p-4 pt-20 dark:border-zinc-400 h-[90%] aspect-square rounded-lg">
         {children}
       </div>
     </div>

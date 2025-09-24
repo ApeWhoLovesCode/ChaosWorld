@@ -81,16 +81,27 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       }
       setMoveItem(newRowI, colI + colAddV, isTriangle ? 1 : 3);
     }
-    console.log('canMoveArr: ', canMoveArr);
     return canMoveArr;
   };
 
+  const getRandomC = () => Math.floor(Math.random() * rowNum * colNum);;
+
   const initData = () => {
-    // const randomC = Math.floor(Math.random() * rowNum * colNum);
-    const randomC = 24;
-    let i = 0;
-    const mid = rowNum / 2;
     let addCount = 0;
+    let i = 0;
+    Array.from({ length: rowNum }).map((_, rowI) => {
+      for (let colI = 0; colI < colNum + addCount; colI++) {
+        i++;
+      }
+      if (rowI < mid - 1) addCount += 2;
+      else if (rowI > mid - 1) addCount -= 2;
+    });
+    total.current = i;
+    console.log('total.current: ', total.current);
+    let randomC = getRandomC()
+    i = 0;
+    const mid = rowNum / 2;
+    addCount = 0;
     let zeroRow = 0,
       zeroCol = 0;
     const newData = Array.from({ length: rowNum }).map((_, rowI) => {
@@ -110,8 +121,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       }
       return arr;
     });
-    total.current = rowNum * colNum;
-    console.log('newData: ', newData);
     setGridArr(structuredClone(newData));
     setState({ data: structuredClone(newData) });
     setState({ zeroInfo: { row: zeroRow, col: zeroCol, canMoveArr: reSetCanMoveArr(zeroRow, zeroCol, newData) } });
@@ -126,11 +135,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       [gridArr[row][col], gridArr[row2][col2]] = [gridArr[row2][col2], gridArr[row][col]];
     }
     exChangeVal(p.row, p.col, target.row, target.col);
-    // exChangeVal(p.col, p.row, target.col, target.row);
-    if (isPuzzleSolved(gridArr)) {
-      onComplete?.();
-    }
-    console.log('gridArr: ', gridArr);
     setGridArr([...gridArr]);
     setState({
       zeroInfo: {
@@ -139,6 +143,12 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         canMoveArr: reSetCanMoveArr(p.row, p.col, gridArr),
       },
     });
+    if (isPuzzleSolved(gridArr)) {
+      // 延迟一下等待动画结束
+      setTimeout(() => {
+        onComplete?.();
+      }, 400);
+    }
   };
 
   const onAreaTouchStart = (e: any) => {

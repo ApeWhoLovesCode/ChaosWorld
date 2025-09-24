@@ -29,15 +29,19 @@ export function randomNumberArray(size: number) {
 
 /** 判断是否完成拼图 */
 export function isPuzzleSolved(arr: number[][]) {
-  const length = arr.length
-  for (let i1 = 0; i1 < length; i1++) {
-    const len = length - (i1 === length - 1 ? 1 : 0 )
-    for (let i2 = 0; i2 < len; i2++) {
-      if (arr[i1][i2] !== i1 * length + i2 + 1) {
-        return false;
+  let pre = arr[0][0];
+  const isNotSolved = arr.some((colArr, rowI) => {
+    for (let colI = 0; colI < colArr.length; colI++) {
+      if(rowI === 0 && colI === 0) continue
+      if(rowI === arr.length - 1 && colI === colArr.length - 1) continue
+      if (colArr[colI] !== pre + 1) {
+        return true;
       }
+      pre = colArr[colI];
     }
-  }
+    return false
+  })
+  if(isNotSolved) return false
   return arr.at(-1)?.at(-1) === 0
 }
 
