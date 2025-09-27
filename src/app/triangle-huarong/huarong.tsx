@@ -43,7 +43,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     () => {
       const cardWrap = huarongAreaRef.current;
       const width = cardWrap?.clientWidth ?? 0;
-      const gridSize = (width - gap * (colNum - 1)) / colNum;
+      const gridSize = Math.floor(width / (colNum + 2 * (rowNum / 2 - 1)));
       const height = gridSize * rowNum + gap * (rowNum - 1);
       setState({ gap: gridSize / 2, height, gridSize });
       if (state.gridSize !== gridSize) {
