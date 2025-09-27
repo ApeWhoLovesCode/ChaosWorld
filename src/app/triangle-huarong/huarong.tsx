@@ -8,7 +8,7 @@ import useMergeProps from '@/hooks/useMergeProps';
 import { HuarongRoadCtx, onChangeGridParams } from './context';
 import { isPuzzleSolved } from './utils';
 import { isMobile } from '@/utils/handleDom';
-import { Direction } from '@/utils/tool';
+import { Direction, shuffleArray } from '@/utils/tool';
 
 const defaultProps: TriangleHuarongRoadProps = {
   rowNum: 4,
@@ -20,7 +20,7 @@ type RequireType = keyof typeof defaultProps;
 
 export default function Huarong(comProps: TriangleHuarongRoadProps) {
   const props = useMergeProps<TriangleHuarongRoadProps, RequireType>(comProps, defaultProps);
-  const { gap, width, data, rowNum, colNum, isNotBg, onComplete, onResize, children, ...ret } = props;
+  const { gap, width, rowNum, colNum, isNotBg, onComplete, onResize, children, ...ret } = props;
   const huarongAreaRef = useRef<HTMLDivElement>(null);
   const huarongRef = useRef<HTMLDivElement>(null);
   const total = useRef(0);
@@ -38,7 +38,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       canMoveArr: [] as CanMoveItem[],
     },
   });
-  const [touchIndex, setTouchIndex] = useState<number | undefined>(void 0);
 
   const { run: getCardInfo } = useDebounceFn(
     () => {
@@ -89,30 +88,37 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
   const initData = () => {
     let addCount = 0;
     let i = 0;
+    const mid = rowNum / 2;
+    const valArr: number[] = []
     Array.from({ length: rowNum }).map((_, rowI) => {
       for (let colI = 0; colI < colNum + addCount; colI++) {
+        valArr.push(i)
         i++;
       }
       if (rowI < mid - 1) addCount += 2;
       else if (rowI > mid - 1) addCount -= 2;
     });
     total.current = i;
-    console.log('total.current: ', total.current);
-    let randomC = getRandomC()
-    i = 0;
-    const mid = rowNum / 2;
+    if(props.isReadyComplete) {
+      valArr.splice(0, 1);
+      valArr.splice(total.current - 2, 0, 0);
+    } else {
+      shuffleArray(valArr)
+    }
+    console.log('valArr: ', valArr);
     addCount = 0;
+    i = 0;
     let zeroRow = 0,
       zeroCol = 0;
     const newData = Array.from({ length: rowNum }).map((_, rowI) => {
       const arr: number[] = [];
       for (let colI = 0; colI < colNum + addCount; colI++) {
-        i++;
-        arr.push(i !== randomC ? i : 0);
-        if (i === randomC) {
+        arr.push(valArr[i]);
+        if (valArr[i] === 0) {
           zeroRow = rowI;
           zeroCol = colI;
         }
+        i++;
       }
       if (rowI < mid - 1) {
         addCount += 2;
@@ -121,6 +127,7 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
       }
       return arr;
     });
+    console.log('newData: ', newData);
     setGridArr(structuredClone(newData));
     setState({ data: structuredClone(newData) });
     setState({ zeroInfo: { row: zeroRow, col: zeroCol, canMoveArr: reSetCanMoveArr(zeroRow, zeroCol, newData) } });
@@ -149,14 +156,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         onComplete?.();
       }, 400);
     }
-  };
-
-  const onAreaTouchStart = (e: any) => {
-    // setTouchIndex(8)
-  };
-
-  const onAreaTouchOut = () => {
-    // setTouchIndex(void 0)
   };
 
   const startLeftArr = useMemo(() => {
@@ -204,7 +203,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
         isNotBg,
         startLeftArr,
         gridArr,
-        touchIndex,
         onChangeGrid,
       }}
     >
@@ -214,9 +212,6 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
           // padding: gap + 'px',
           width,
         }}
-        onTouchStart={onAreaTouchStart}
-        onMouseDown={onAreaTouchStart}
-        onMouseUp={onAreaTouchOut}
       >
         <div ref={huarongRef} className="relative w-full" style={{ height: state.height + 'px' }}>
           {renderChildren()}

@@ -12,7 +12,6 @@ export const HuarongRoadCtx = React.createContext<HuarongRoadCtxType>({
   colNum: 0,
   startLeftArr: [],
   isNotBg: false,
-  touchIndex: void 0,
   onChangeGrid: (p: onChangeGridParams) => {}
 })
 
@@ -26,8 +25,6 @@ export type HuarongRoadCtxType = {
   gridSize: number
   zeroInfo: ZeroInfo
   startLeftArr: number[]
-  /** 当前触摸的格子索引 */
-  touchIndex?: number
   onChangeGrid: (p: onChangeGridParams) => void
 } & Required<TriangleHuarongRoadCommon>
 
