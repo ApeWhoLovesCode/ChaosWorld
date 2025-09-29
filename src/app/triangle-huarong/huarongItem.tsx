@@ -8,6 +8,7 @@ import useTouchEvent from '@/hooks/useTouchEvent';
 import './index.css';
 import { checkDirectionXY, DirectionType, range } from '@/utils/compute';
 import type { Direction } from '@/utils/tool';
+import { cn } from '@/lib/utils';
 
 export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   const { index, children, row, col, value, ...ret } = props as Required<TriangleHuarongRoadItemProps>;
@@ -137,7 +138,10 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   return (
     // triangle
     <div
-      className={`absolute transition-all select-none ${moveDirection ? 'text-blue-400' : ''}`}
+      className={cn(
+        `absolute transition-all select-none`,
+        moveDirection ? 'text-blue-400' : '',
+      )}
       style={{
         ...cardStyle,
         transitionDuration: info.duration + 's',
@@ -145,9 +149,7 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
       }}
       {...onTouchFn}
     >
-      <div
-        className={`triangle flex size-full items-center justify-center transition-all ${isTriangle ? 'rotate-0' : 'rotate-180'} ${!isNotBg ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
-      >
+      <div className={cn('triangle size-full flex-center transition-all', isTriangle ? 'rotate-0' : 'rotate-180', !isNotBg ? 'bg-gray-200 dark:bg-gray-600' : '',)}>
         {children}
       </div>
     </div>

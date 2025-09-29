@@ -1,29 +1,34 @@
 'use client';
 
-import { useState } from 'react';
 import { CompleteDialog } from './components/CompleteDialog';
 import Huarong from './huarong';
 import PageContainer from '@/components/PageContainer';
+import useGameBegin from '@/hooks/useGameBegin';
+import { TriangleHuarongRoadInstance } from './type';
+import { useRef } from 'react';
 
 export default function Home() {
-  const [completeOpen, setCompleteOpen] = useState(false);
-
-  const onComplete = () => {
-    setCompleteOpen(true);
-  }
-
-  const reTry = () => {
-    console.log('reTry');
-  }
+  const { gameAreaKey, setGameAreaKey, time, isStart, completeOpen, setCompleteOpen, onStart, onReStart, onEnd } =
+    useGameBegin();
+  const huarongRef = useRef<TriangleHuarongRoadInstance>(null);
 
   return (
     <>
-      <PageContainer reTry={reTry}>
-        <div className="w-[100%] h-full">
-          <Huarong isReadyComplete={false} onComplete={onComplete} />
+      <PageContainer time={time} isStart={isStart} onStart={onStart} onReStart={onReStart}>
+        <div className="h-full w-[100%]">
+          <Huarong key={gameAreaKey} ref={huarongRef} isReadyComplete={true} onComplete={onEnd} />
         </div>
       </PageContainer>
-      <CompleteDialog open={completeOpen} onOpenChange={setCompleteOpen} reTry={reTry} />
+      <CompleteDialog
+        time={time}
+        open={completeOpen}
+        onOpenChange={setCompleteOpen}
+        onReStart={() => {
+          // huarongRef.current?.initData();
+          setGameAreaKey((v) => ++v);
+          onReStart();
+        }}
+      />
     </>
   );
 }

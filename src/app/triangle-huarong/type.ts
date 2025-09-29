@@ -1,5 +1,5 @@
 import { Direction } from "@/utils/tool"
-import { CSSProperties } from "react"
+import { CSSProperties, Ref } from "react"
 
 export type TriangleHuarongRoadCommon = {
   /** 
@@ -16,7 +16,11 @@ export type TriangleHuarongRoadCommon = {
   isNotBg?: boolean
 }
 
-export type TriangleHuarongRoadProps = { 
+export type TriangleHuarongRoadInstance = {
+  initData: () => void
+}
+
+export type TriangleHuarongRoadProps = {
   /**
    * 整体的宽度（高度等于宽度的1.25倍）
    * @default 100%
@@ -29,6 +33,8 @@ export type TriangleHuarongRoadProps = {
   gap?: number
   /** 即将排列就绪 */
   isReadyComplete?: boolean
+  /** ref */
+  ref?: Ref<TriangleHuarongRoadInstance>
   /** 拼图完成了的回调 */
   onComplete?: () => void
   /** 拼图整体大小发生了变化的回调 */

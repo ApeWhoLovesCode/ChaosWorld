@@ -8,23 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { formatTime } from '@/utils/format';
 
 export function CompleteDialog({
   open,
+  time,
   onOpenChange,
-  reTry,
+  onReStart,
 }: {
   open: boolean;
+  time: number;
   onOpenChange: (open: boolean) => void;
-  reTry: () => void;
+  onReStart: () => void;
 }) {
   const onClose = () => onOpenChange(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>恭喜</DialogTitle>
-          <DialogDescription>恭喜完成了拼图</DialogDescription>
+          <DialogTitle>挑战成功</DialogTitle>
+          <DialogDescription>
+            恭喜完成了拼图，用时 <i className="font-bold">{formatTime(time)}</i>
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-start">
           <Button type="button" variant="outline" onClick={onClose}>
@@ -35,7 +40,7 @@ export function CompleteDialog({
             variant="secondary"
             onClick={() => {
               onClose();
-              reTry();
+              onReStart();
             }}
           >
             重新挑战

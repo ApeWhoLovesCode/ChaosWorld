@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { CanMoveItem, TriangleDataItem, TriangleHuarongRoadProps } from './type';
 import { useDebounceFn, useSetState } from 'ahooks';
 import HuarongItem from './huarongItem';
@@ -9,6 +9,7 @@ import { HuarongRoadCtx, onChangeGridParams } from './context';
 import { isPuzzleSolved } from './utils';
 import { isMobile } from '@/utils/handleDom';
 import { Direction, shuffleArray } from '@/utils/tool';
+import { cn } from '@/lib/utils';
 
 const defaultProps: TriangleHuarongRoadProps = {
   rowNum: 4,
@@ -20,7 +21,7 @@ type RequireType = keyof typeof defaultProps;
 
 export default function Huarong(comProps: TriangleHuarongRoadProps) {
   const props = useMergeProps<TriangleHuarongRoadProps, RequireType>(comProps, defaultProps);
-  const { gap, width, rowNum, colNum, isNotBg, onComplete, onResize, children, ...ret } = props;
+  const { gap, width, rowNum, colNum, isNotBg, onComplete, onResize, children, ref, ...ret } = props;
   const huarongAreaRef = useRef<HTMLDivElement>(null);
   const huarongRef = useRef<HTMLDivElement>(null);
   const total = useRef(0);
@@ -169,6 +170,12 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     return arr;
   }, [rowNum, state.gap, state.gridSize]);
 
+  useImperativeHandle(ref, () => {
+    return {
+      initData,
+    };
+  })
+
   const renderChildren = () => {
     const hasNum = Object.values(children?.valueOf() ?? {}).length;
     if (total.current - hasNum <= 0) return children;
@@ -208,7 +215,9 @@ export default function Huarong(comProps: TriangleHuarongRoadProps) {
     >
       <div
         ref={huarongAreaRef}
+        className={cn(ret.className)}
         style={{
+          ...ret.style,
           // padding: gap + 'px',
           width,
         }}
