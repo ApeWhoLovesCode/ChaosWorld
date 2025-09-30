@@ -3,13 +3,13 @@
 import { CompleteDialog } from './components/CompleteDialog';
 import Huarong from './huarong';
 import PageContainer from '@/components/PageContainer';
-import useGameBegin from '@/hooks/useGameBegin';
+import useGameControl from '@/hooks/useGameControl';
 import { TriangleHuarongRoadInstance } from './type';
 import { useRef } from 'react';
 
 export default function Home() {
-  const { gameAreaKey, setGameAreaKey, time, isStart, completeOpen, setCompleteOpen, onStart, onReStart, onEnd } =
-    useGameBegin();
+  const { historyInfo, gameAreaKey, setGameAreaKey, time, isStart, completeOpen, setCompleteOpen, onStart, onReStart, onEnd } =
+    useGameControl({historyKey: 'triangle-huarong'});
   const huarongRef = useRef<TriangleHuarongRoadInstance>(null);
 
   return (
@@ -22,6 +22,7 @@ export default function Home() {
       <CompleteDialog
         time={time}
         open={completeOpen}
+        historyInfo={historyInfo}
         onOpenChange={setCompleteOpen}
         onReStart={() => {
           // huarongRef.current?.initData();

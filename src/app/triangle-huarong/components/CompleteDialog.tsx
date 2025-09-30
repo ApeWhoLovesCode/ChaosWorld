@@ -8,16 +8,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { HistoryInfo } from '@/hooks/useGameControl';
 import { formatTime } from '@/utils/format';
 
 export function CompleteDialog({
   open,
   time,
+  historyInfo,
   onOpenChange,
   onReStart,
 }: {
   open: boolean;
   time: number;
+  historyInfo: HistoryInfo;
   onOpenChange: (open: boolean) => void;
   onReStart: () => void;
 }) {
