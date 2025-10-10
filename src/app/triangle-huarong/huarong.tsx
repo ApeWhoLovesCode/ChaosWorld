@@ -8,7 +8,7 @@ import useMergeProps from '@/hooks/useMergeProps';
 import { HuarongRoadCtx, onChangeGridParams } from './context';
 import { isPuzzleSolved } from './utils';
 import { isMobile } from '@/utils/handleDom';
-import { Direction, shuffleArray } from '@/utils/tool';
+import { Direction, shuffleArray } from '@/utils';
 import { cn } from '@/lib/utils';
 
 const defaultProps: TriangleHuarongRoadProps = {

@@ -1,4 +1,4 @@
-import { Direction } from "@/utils/tool"
+import { Direction } from "@/utils"
 import { CSSProperties, Ref } from "react"
 
 export type TriangleHuarongRoadCommon = {

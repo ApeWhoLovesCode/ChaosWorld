@@ -1,0 +1,130 @@
+.title-scroll-line {
+  position: relative;
+  $aTime: 2s;
+  $moveX: 3em;
+  $totalX: calc(var(--text-length) * 1em + 1.8em + $moveX);
+  .round-icon {
+    animation: round $aTime ease-in-out infinite alternate;
+  }
+  @keyframes round {
+    0% {
+      transform: translateX(0) rotate(0deg);
+    }
+    30% {
+      transform: translateX(0) rotate(0deg);
+    }
+    70% {
+      transform: translateX($moveX) rotate(360deg);
+    }
+    100% {
+      transform: translateX($moveX) rotate(360deg);
+    }
+  }
+  .lhh-icon {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    & > div {
+      animation-duration: $aTime;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+      background-color: currentColor;
+    }
+    &-vertical {
+      width: 0.1em;
+      height: 0.8em;
+      animation-name: lhh-vertical-l;
+      @keyframes lhh-vertical-l {
+        0% {
+          border-top-left-radius: 0.05em;
+          border-top-right-radius: 0.05em;
+        }
+        20% {
+          border-top-left-radius: 0.05em;
+          border-top-right-radius: 0.05em;
+        }
+        70% {
+          border-radius: 0.05em;
+        }
+        100% {
+          border-radius: 0.05em;
+        }
+      }
+      &-r {
+        position: absolute;
+        left: 0;
+        top: 0;
+        animation-name: lhh-vertical-r;
+      }
+      @keyframes lhh-vertical-r {
+        0% {
+          opacity: 0;
+          transform: translateX(0);
+        }
+        30% {
+          opacity: 0;
+          transform: translateX(0);
+        }
+        70% {
+          opacity: 1;
+          transform: translateX(0.6em);
+          border-radius: 0.05em;
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(0.6em);
+          border-radius: 0.05em;
+        }
+      }
+    }
+    &-horizontal {
+      width: 0.5em;
+      height: 0.1em;
+      animation-name: lhh-horizontal;
+      border-top-right-radius: 0.05em;
+      border-bottom-right-radius: 0.05em;
+    }
+    @keyframes lhh-horizontal {
+      0% {
+        border-top-right-radius: 0.05em;
+        border-bottom-right-radius: 0.05em;
+        transform: translateY(0);
+      }
+      30% {
+        border-top-right-radius: 0.05em;
+        border-bottom-right-radius: 0.05em;
+        transform: translateY(0);
+      }
+      70% {
+        border-radius: 0;
+        transform: translateY(-0.35em);
+      }
+      100% {
+        border-radius: 0;
+        transform: translateY(-0.35em);
+      }
+    }
+  }
+  .bottom-line {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    animation: line $aTime ease-in-out infinite alternate;
+    @keyframes line {
+      0% {
+        width: 0px;
+      }
+      5% {
+        width: 0px;
+      }
+      70% {
+        width: $totalX;
+      }
+      100% {
+        width: $totalX;
+      }
+    }
+  }
+}

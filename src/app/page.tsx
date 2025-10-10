@@ -6,6 +6,7 @@ export default function Home() {
     <div>
       <ThemeBtn />
       <MoveBtn />
+      <div className="h-screen"></div>
     </div>
   );
 }

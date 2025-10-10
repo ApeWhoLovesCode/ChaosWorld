@@ -1,6 +1,6 @@
-import React, { RefObject } from "react";
-import { Direction } from "@/utils/tool";
-import { GridPosition, TriangleDataItem, TriangleHuarongRoadCommon, ZeroInfo } from "./type";
+import React from "react";
+import { Direction } from "@/utils";
+import { GridPosition, TriangleHuarongRoadCommon, ZeroInfo } from "./type";
 
 export const HuarongRoadCtx = React.createContext<HuarongRoadCtxType>({
   gap: 2,

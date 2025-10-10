@@ -6,8 +6,8 @@ import { useSetState } from 'ahooks';
 import { HuarongRoadCtx } from './context';
 import useTouchEvent from '@/hooks/useTouchEvent';
 import './index.css';
-import { checkDirectionXY, DirectionType, range } from '@/utils/compute';
-import type { Direction } from '@/utils/tool';
+import { checkDirectionXY, range } from '@/utils/compute';
+import type { Direction } from '@/utils';
 import { cn } from '@/lib/utils';
 
 export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
@@ -136,10 +136,9 @@ export default function HuarongItem(props: TriangleHuarongRoadItemProps) {
   }
 
   return (
-    // triangle
     <div
       className={cn(
-        `absolute transition-all select-none`,
+        `absolute transition-all select-none cursor-grab touch-none`,
         moveDirection ? 'text-blue-400' : '',
       )}
       style={{

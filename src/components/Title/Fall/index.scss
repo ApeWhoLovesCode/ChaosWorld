@@ -1,0 +1,18 @@
+.title-fall {
+  .item {
+    font-family: Georgia, serif;
+    display: inline-block;
+    font-size: 3vmin;
+    font-weight: bold;
+    animation: run ease-out 0.6s forwards;
+    transform: translateY(-30vh);
+  }
+  @keyframes run {
+    0% {
+      transform: translateY(-30vh);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+}
