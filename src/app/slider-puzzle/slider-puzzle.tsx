@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useDebounceFn, useSetState } from "ahooks";
 import useMergeProps from "@/hooks/useMergeProps";
-import { randomLetter, randomStr } from "@/utils/random";
+import { randomLetter } from "@/utils/random";
 import { createTwoArray } from "@/utils/compute";
 import { isMobile } from "@/utils/handleDom";
 import { cn } from "@/lib/utils";
@@ -44,7 +44,7 @@ const SliderPuzzle = forwardRef<SliderPuzzleInstance, SliderPuzzleProps>(
       onResize,
       ...ret
     } = props;
-    const idRef = useRef(randomStr(classPrefix));
+    const areaRef = useRef<HTMLDivElement>(null);
     const letter = useRef(randomLetter());
     const [ctxState, setCtxState] = useSetState({
       initSpaceIndex: 0,
@@ -61,9 +61,7 @@ const SliderPuzzle = forwardRef<SliderPuzzleInstance, SliderPuzzleProps>(
 
     const { run: getCardInfo } = useDebounceFn(
       () => {
-        const cardWrap = document.querySelector(
-          `.${idRef.current} .${classPrefix}-area`
-        );
+        const cardWrap = areaRef.current;
         const w = ((cardWrap?.clientWidth ?? 0) - (size - 1) * gap) / size;
         const h = ((cardWrap?.clientHeight ?? 0) - (size - 1) * gap) / size;
         setCtxState({
@@ -179,8 +177,8 @@ const SliderPuzzle = forwardRef<SliderPuzzleInstance, SliderPuzzleProps>(
           onChangeGrid,
         }}
       >
-        <div className={cn(`${classPrefix} ${idRef.current}`, ret.className)} style={{...wrapStyle, ...ret.style}}>
-          <div className={`${classPrefix}-area`}>{renderChildren()}</div>
+        <div className={cn(`${classPrefix}`, ret.className)} style={{...wrapStyle, ...ret.style}}>
+          <div ref={areaRef} className={`${classPrefix}-area`}>{renderChildren()}</div>
         </div>
       </SliderPuzzleCtx.Provider>
     );

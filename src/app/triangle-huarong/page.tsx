@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <PageContainer time={time} isStart={isStart} onStart={onStart} onReStart={onReStart}>
-        <div className="h-full w-[100%]">
+        <div className="h-full w-[100%] pt-20">
           <Huarong key={gameAreaKey} ref={huarongRef} isReadyComplete={true} onComplete={onEnd} />
         </div>
       </PageContainer>

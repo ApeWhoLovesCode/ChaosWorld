@@ -1,7 +1,7 @@
 'use client';
 
 import { CompleteDialog } from '@/components/CompleteDialog';
-import SliderPuzzle from './slider-puzzle';
+import SliderPuzzle from './index';
 import PageContainer from '@/components/PageContainer';
 import useGameControl from '@/hooks/useGameControl';
 import { SliderPuzzleInstance } from './type';

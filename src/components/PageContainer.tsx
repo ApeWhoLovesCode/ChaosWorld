@@ -16,7 +16,7 @@ export default ({ children, isStart, time, onStart, onReStart }: PropsType) => {
 
   return (
     <div className="flex h-[90%] gap-x-4">
-      <div className="relative aspect-square h-full rounded-lg border-2 border-solid border-zinc-600 p-4 pt-20 dark:border-zinc-400">
+      <div className="relative aspect-square h-full rounded-lg border-2 border-solid border-zinc-600 p-4 dark:border-zinc-400">
         {children}
         {!isStart ? (
           <div

@@ -3,10 +3,9 @@ import { classPrefixPuzzleCanvas } from "./config";
 import { useSetState } from "ahooks";
 import { SliderPuzzleCanvasProps } from "./type";
 import { SliderPuzzleCtx } from "./context";
-import useMergeProps from "../hooks/useMergeProps";
-import { withNativeProps } from "../utils/native-props";
-import { classBem } from "../utils/handleDom";
+import useMergeProps from "@/hooks/useMergeProps";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 const defaultProps = {
   globalAlpha: 0.5,
@@ -112,10 +111,10 @@ export default (comProps: SliderPuzzleCanvasProps) => {
     }
   }
 
-  return withNativeProps(
-    ret,
+  return (
     <div 
-      className={classBem(classPrefixPuzzleCanvas, {full: index === void 0})}
+      className={cn(classPrefixPuzzleCanvas, {full: index === void 0}, ret.className)}
+      style={{...ret.style}}
     >
       <canvas
         ref={canvasRef}
